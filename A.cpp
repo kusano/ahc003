@@ -134,10 +134,16 @@ int main()
     int dx[] = {0, 0, -1, 1};
     int dy[] = {-1, 1, 0, 0};
 
+    vector<vector<int>> HV(H*2-1, vector<int>(W*2-1, 1));
+
     for (int k=0; k<1000; k++)
     {
         int sy, sx, ty, tx;
         tester.getInput(&sy, &sx, &ty, &tx);
+        sx *= 2;
+        sy *= 2;
+        tx *= 2;
+        ty *= 2;
 
         int oo = 99999999;
         vector<vector<int>> D(H*2-1, vector<int>(W*2-1, oo));
@@ -145,8 +151,8 @@ int main()
         priority_queue<pair<int, pair<int, int>>> Q;
         vector<vector<bool>> F(H*2-1, vector<bool>(W*2-1));
 
-        D[sy*2][sx*2] = 0;
-        Q.push({0, {sx*2, sy*2}});
+        D[sy][sx] = 0;
+        Q.push({0, {sx, sy}});
 
         while (!Q.empty())
         {
@@ -165,7 +171,7 @@ int main()
                 if (0<=tx && tx<2*W &&
                     0<=ty && ty<2*H)
                 {
-                    int td = D[fy][fx]+1;
+                    int td = D[fy][fx] + HV[fy+dy[d]][fx+dx[d]];
                     if (td<D[ty][tx])
                     {
                         D[ty][tx] = td;
@@ -176,18 +182,34 @@ int main()
             }
         }
 
-        int x = tx*2;
-        int y = ty*2;
-        string ans;
-        while (!(x==sx*2 && y==sy*2))
+        int x = tx;
+        int y = ty;
+        vector<int> path;
+        while (!(x==sx && y==sy))
         {
             int d = M[y][x];
-            ans += ds[d];
+            path.push_back(d);
             x -= dx[d]*2;
             y -= dy[d]*2;
         }
-        reverse(ans.begin(), ans.end());
-        tester.answer(ans);
+        reverse(path.begin(), path.end());
+
+        string ans;
+        for (int p: path)
+            ans += ds[p];
+
+        int result = tester.answer(ans);
+
+        //  correct weight
+        int diff = (result-D[ty][tx])/(int)path.size();
+        x = sx;
+        y = sy;
+        for (int d: path)
+        {
+            HV[y+dy[d]][x+dx[d]] = max(1, HV[y+dy[d]][x+dx[d]]+diff);
+            x += dx[d]*2;
+            y += dy[d]*2;
+        }
     }
     tester.printScore();
 }
