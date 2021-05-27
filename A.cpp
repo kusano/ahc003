@@ -110,6 +110,7 @@ public:
             }
             assert(0<=x && x<W && 0<=y && y<H);
         }
+        assert(x==tx[k] && y==ty[k]);
         score = score*0.998+a[k]/b;
         int result = int(b*e[k]);
         k++;
@@ -129,69 +130,61 @@ int main()
     Tester tester;
     tester.init();
 
+    string ds = "UDLR";
+    int dx[] = {0, 0, -1, 1};
+    int dy[] = {-1, 1, 0, 0};
+
     for (int k=0; k<1000; k++)
     {
         int sy, sx, ty, tx;
         tester.getInput(&sy, &sx, &ty, &tx);
 
         int oo = 99999999;
-        vector<vector<int>> D(H, vector<int>(W, oo));
-        vector<vector<char>> M(H, vector<char>(W, '.'));
+        vector<vector<int>> D(H*2-1, vector<int>(W*2-1, oo));
+        vector<vector<char>> M(H*2-1, vector<char>(W*2-1));
         priority_queue<pair<int, pair<int, int>>> Q;
-        vector<vector<bool>> F(H, vector<bool>(W));
+        vector<vector<bool>> F(H*2-1, vector<bool>(W*2-1));
 
-        D[sy][sx] = 0;
-        M[sy][sx] = '!';
-        Q.push(make_pair(0, make_pair(sy, sx)));
+        D[sy*2][sx*2] = 0;
+        Q.push({0, {sx*2, sy*2}});
 
         while (!Q.empty())
         {
-            int y = Q.top().second.first;
-            int x = Q.top().second.second;
+            int fx = Q.top().second.first;
+            int fy = Q.top().second.second;
             Q.pop();
-            if (F[y][x])
+            if (F[fy][fx])
                 continue;
-            F[y][x] = true;
+            F[fy][fx] = true;
 
-            if (0<=y-1 && !F[y-1][x] && D[y][x]+1<D[y-1][x])
+            for (int d=0; d<4; d++)
             {
-                M[y-1][x] = 'U';
-                D[y-1][x] = D[y][x]+1;
-                Q.push({-D[y-1][x], {y-1, x}});
-            }
-            if (y+1<H && !F[y+1][x] && D[y][x]+1<D[y+1][x])
-            {
-                M[y+1][x] = 'D';
-                D[y+1][x] = D[y][x]+1;
-                Q.push({-D[y+1][x], {y+1, x}});
-            }
-            if (0<=x-1 && !F[y][x-1] && D[y][x]+1<D[y][x-1])
-            {
-                M[y][x-1] = 'L';
-                D[y][x-1] = D[y][x]+1;
-                Q.push({-D[y][x-1], {y, x-1}});
-            }
-            if (x+1<W && !F[y][x+1] && D[y][x]+1<D[y][x+1])
-            {
-                M[y][x+1] = 'R';
-                D[y][x+1] = D[y][x]+1;
-                Q.push({-D[y][x+1], {y, x+1}});
+                int tx = fx+dx[d]*2;
+                int ty = fy+dy[d]*2;
+
+                if (0<=tx && tx<2*W &&
+                    0<=ty && ty<2*H)
+                {
+                    int td = D[fy][fx]+1;
+                    if (td<D[ty][tx])
+                    {
+                        D[ty][tx] = td;
+                        M[ty][tx] = d;
+                        Q.push({-td, {tx, ty}});
+                    }
+                }
             }
         }
 
-        int y = ty;
-        int x = tx;
+        int x = tx*2;
+        int y = ty*2;
         string ans;
-        while (M[y][x]!='!')
+        while (!(x==sx*2 && y==sy*2))
         {
-            ans += M[y][x];
-            switch (M[y][x])
-            {
-            case 'U': y++; break;
-            case 'D': y--; break;
-            case 'L': x++; break;
-            case 'R': x--; break;
-            }
+            int d = M[y][x];
+            ans += ds[d];
+            x -= dx[d]*2;
+            y -= dy[d]*2;
         }
         reverse(ans.begin(), ans.end());
         tester.answer(ans);
