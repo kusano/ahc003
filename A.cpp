@@ -119,7 +119,7 @@ public:
 
     void printScore()
     {
-        cout<<long long(2312311*score)<<endl;
+        cerr<<(long long)(2312311*score)<<endl;
     }
 };
 
@@ -134,10 +134,26 @@ int main()
     int dx[] = {0, 0, -1, 1};
     int dy[] = {-1, 1, 0, 0};
 
-    vector<vector<int>> HV(H*2-1, vector<int>(W*2-1, 1));
+    vector<vector<int>> HV(H*2-1, vector<int>(W*2-1, 1000));
 
     for (int k=0; k<1000; k++)
     {
+        //if (k%100==99)
+        //{
+        //    for (int y=0; y<H; y++)
+        //    {
+        //        for (int x=0; x<W-1; x++)
+        //            cerr<<(x==0?"":" ")<<HV[2*y][2*x+1];
+        //        cerr<<endl;
+        //    }
+        //    for (int y=0; y<H-1; y++)
+        //    {
+        //        for (int x=0; x<W; x++)
+        //            cerr<<(x==0?"":" ")<<HV[2*y+1][2*x];
+        //        cerr<<endl;
+        //    }
+        //}
+
         int sy, sx, ty, tx;
         tester.getInput(&sy, &sx, &ty, &tx);
         sx *= 2;
@@ -206,7 +222,7 @@ int main()
         y = sy;
         for (int d: path)
         {
-            HV[y+dy[d]][x+dx[d]] = max(1, HV[y+dy[d]][x+dx[d]]+diff);
+            HV[y+dy[d]][x+dx[d]] = max(1000, min(9000, HV[y+dy[d]][x+dx[d]]+diff));
             x += dx[d]*2;
             y += dy[d]*2;
         }
