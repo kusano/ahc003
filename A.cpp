@@ -5,6 +5,7 @@
 #include <utility>
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 using namespace std;
 
 const int W = 30;
@@ -111,7 +112,7 @@ public:
             assert(0<=x && x<W && 0<=y && y<H);
         }
         assert(x==tx[k] && y==ty[k]);
-        score = score*0.998+a[k]/b;
+        score += pow(0.998, 1000-(k+1))*a[k]/b;
         int result = int(b*e[k]);
         k++;
         return result;
@@ -119,7 +120,7 @@ public:
 
     void printScore()
     {
-        cerr<<(long long)(2312311*score)<<endl;
+        cerr<<"score: "<<(long long)(2312311*score)<<endl;
     }
 };
 
@@ -134,7 +135,8 @@ int main()
     int dx[] = {0, 0, -1, 1};
     int dy[] = {-1, 1, 0, 0};
 
-    vector<vector<int>> HV(H*2-1, vector<int>(W*2-1, 1000));
+    vector<int> DH(H*2-1, 1000);
+    vector<int> DV(W*2-1, 1000);
 
     for (int k=0; k<1000; k++)
     {
@@ -187,7 +189,7 @@ int main()
                 if (0<=tx && tx<2*W &&
                     0<=ty && ty<2*H)
                 {
-                    int td = D[fy][fx] + HV[fy+dy[d]][fx+dx[d]];
+                    int td = D[fy][fx] + (dx[d]!=0 ? DH[fy]/1024 : DV[fx]/1024);
                     if (td<D[ty][tx])
                     {
                         D[ty][tx] = td;
@@ -217,15 +219,19 @@ int main()
         int result = tester.answer(ans);
 
         //  correct weight
-        int diff = (result-D[ty][tx])/(int)path.size();
+        int diff = (result-D[ty][tx])/(int)path.size()*1024/29;
         x = sx;
         y = sy;
         for (int d: path)
         {
-            HV[y+dy[d]][x+dx[d]] = max(1000, min(9000, HV[y+dy[d]][x+dx[d]]+diff));
+            if (dx[d]!=0)
+                DH[y] = max(1000*1024, min(9000*1024, DH[y]+diff));
+            else
+                DV[x] = max(1000*1024, min(9000*1024, DV[x]+diff));
             x += dx[d]*2;
             y += dy[d]*2;
         }
     }
+
     tester.printScore();
 }
