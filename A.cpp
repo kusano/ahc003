@@ -138,6 +138,10 @@ int main()
     vector<double> HL(H*2-1, 1000), HR(H*2-1, 1000);
     vector<double> VU(W*2-1, 1000), VD(H*2-1, 1000);
 
+    vector<int> sxs, sys;
+    vector<vector<int>> paths;
+    vector<int> results;
+
     for (int k=0; k<1000; k++)
     {
         //if (k%100==99)
@@ -162,6 +166,9 @@ int main()
         sy *= 2;
         tx *= 2;
         ty *= 2;
+
+        sxs.push_back(sx);
+        sys.push_back(sy);
 
         int oo = 99999999;
         vector<vector<int>> D(H*2-1, vector<int>(W*2-1, oo));
@@ -228,28 +235,52 @@ int main()
 
         int result = tester.answer(ans);
 
+        paths.push_back(path);
+        results.push_back(result);
+
         //  correct weight
-        double diff = float(result-D[ty][tx])/path.size()/29;
-        x = sx;
-        y = sy;
-        for (int d: path)
+        for (int k2=0; k2<=k; k2++)
         {
-            if (dx[d]!=0)
+            int x = sxs[k2];
+            int y = sys[k2];
+            int d = 0;
+            for (int p: paths[k2])
             {
-                int mx = x+dx[d];
-                double t = diff*(2*W-4)/(((2*W-3)-mx)*((2*W-3)-mx)+(mx-1)*(mx-1));
-                HL[y] = max(1000., min(9000., HL[y]+((2*W-3)-mx)*t));
-                HR[y] = max(1000., min(9000., HR[y]+(mx-1)*t));
+                if (dx[p]!=0)
+                {
+                    int mx = x+dx[p];
+                    d += int((HL[y]*((2*W-3)-mx) + HR[y]*(mx-1))/(2*W-4));
+                }
+                else
+                {
+                    int my = y+dy[p];
+                    d += int((VU[x]*((2*H-3)-my) + VD[x]*(my-1))/(2*H-4));
+                }
+                x += dx[p]*2;
+                y += dy[p]*2;
             }
-            else
+            double diff = double(results[k2]-d)/paths[k2].size();
+            x = sxs[k2];
+            y = sys[k2];
+            for (int p: paths[k2])
             {
-                int my = y+dy[d];
-                double t = diff*(2*H-4)/(((2*H-3)-my)*((2*H-3)-my)+(my-1)*(my-1));
-                VU[x] = max(1000., min(9000., VU[x]+((2*H-3)-my)*t));
-                VD[x] = max(1000., min(9000., VD[x]+(my-1)*t));
+                if (dx[p]!=0)
+                {
+                    int mx = x+dx[p];
+                    double t = diff*(2*W-4)/(((2*W-3)-mx)*((2*W-3)-mx)+(mx-1)*(mx-1))/(W-1);
+                    HL[y] = max(1000., min(9000., HL[y]+((2*W-3)-mx)*t));
+                    HR[y] = max(1000., min(9000., HR[y]+(mx-1)*t));
+                }
+                else
+                {
+                    int my = y+dy[p];
+                    double t = diff*(2*H-4)/(((2*H-3)-my)*((2*H-3)-my)+(my-1)*(my-1))/(H-1);
+                    VU[x] = max(1000., min(9000., VU[x]+((2*H-3)-my)*t));
+                    VD[x] = max(1000., min(9000., VD[x]+(my-1)*t));
+                }
+                x += dx[p]*2;
+                y += dy[p]*2;
             }
-            x += dx[d]*2;
-            y += dy[d]*2;
         }
     }
     tester.printScore();
