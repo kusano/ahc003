@@ -136,8 +136,8 @@ int main()
     int dx[] = {0, 0, -1, 1};
     int dy[] = {-1, 1, 0, 0};
 
-    vector<double> HL(H*2-1, 1000), HR(H*2-1, 1000);
-    vector<double> VU(W*2-1, 1000), VD(H*2-1, 1000);
+    vector<double> HL(H*2-1, 2000), HR(H*2-1, 2000);
+    vector<double> VU(W*2-1, 2000), VD(H*2-1, 2000);
     vector<vector<double>> delta(H*2-1, vector<double>(W*2-1));
 
     vector<int> sxs, sys;
@@ -249,16 +249,16 @@ int main()
                 {
                     int mx = x+dx[p];
                     double t = diff*0.75*(2*W-4)/(((2*W-3)-mx)*((2*W-3)-mx)+(mx-1)*(mx-1))/(W-1);
-                    HL[y] = max(1000., min(9000., HL[y]+((2*W-3)-mx)*t));
-                    HR[y] = max(1000., min(9000., HR[y]+(mx-1)*t));
+                    HL[y] = max(2000., min(8000., HL[y]+((2*W-3)-mx)*t));
+                    HR[y] = max(2000., min(8000., HR[y]+(mx-1)*t));
                     delta[y][mx] += diff*0.25/(W-1);
                 }
                 else
                 {
                     int my = y+dy[p];
                     double t = diff*0.75*(2*H-4)/(((2*H-3)-my)*((2*H-3)-my)+(my-1)*(my-1))/(H-1);
-                    VU[x] = max(1000., min(9000., VU[x]+((2*H-3)-my)*t));
-                    VD[x] = max(1000., min(9000., VD[x]+(my-1)*t));
+                    VU[x] = max(2000., min(8000., VU[x]+((2*H-3)-my)*t));
+                    VD[x] = max(2000., min(8000., VD[x]+(my-1)*t));
                     delta[my][x] += diff*0.25/(H-1);
                 }
                 x += dx[p]*2;
