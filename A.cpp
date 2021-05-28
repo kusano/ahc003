@@ -10,6 +10,7 @@ using namespace std;
 
 const int W = 30;
 const int H = 30;
+const int K = 1000;
 
 #ifdef ONLINE_JUDGE
 
@@ -60,13 +61,13 @@ public:
             for (int x=0; x<W; x++)
                 cin>>v[y][x];
 
-        sy = vector<int>(1000);
-        sx = vector<int>(1000);
-        ty = vector<int>(1000);
-        tx = vector<int>(1000);
-        a = vector<int>(1000);
-        e = vector<double>(1000);
-        for (int k=0; k<1000; k++)
+        sy = vector<int>(K);
+        sx = vector<int>(K);
+        ty = vector<int>(K);
+        tx = vector<int>(K);
+        a = vector<int>(K);
+        e = vector<double>(K);
+        for (int k=0; k<K; k++)
             cin>>sy[k]>>sx[k]>>ty[k]>>tx[k]>>a[k]>>e[k];
 
         k = 0;
@@ -143,24 +144,22 @@ int main()
     vector<vector<int>> paths;
     vector<int> results;
 
-    for (int k=0; k<1000; k++)
+    auto dist = [&](int fx, int fy, int dir) -> int
     {
-        //if (k%100==99)
-        //{
-        //    for (int y=0; y<H; y++)
-        //    {
-        //        for (int x=0; x<W-1; x++)
-        //            cerr<<(x==0?"":" ")<<HV[2*y][2*x+1];
-        //        cerr<<endl;
-        //    }
-        //    for (int y=0; y<H-1; y++)
-        //    {
-        //        for (int x=0; x<W; x++)
-        //            cerr<<(x==0?"":" ")<<HV[2*y+1][2*x];
-        //        cerr<<endl;
-        //    }
-        //}
+        if (dx[dir]!=0)
+        {
+            int mx = fx+dx[dir];
+            return max(1, int((HL[fy]*((2*W-3)-mx) + HR[fy]*(mx-1))/(2*W-4) + delta[fy][mx]));
+        }
+        else
+        {
+            int my = fy+dy[dir];
+            return max(1, int((VU[fx]*((2*H-3)-my) + VD[fx]*(my-1))/(2*H-4) + delta[my][fx]));
+        }
+    };
 
+    for (int k=0; k<K; k++)
+    {
         int sy, sx, ty, tx;
         tester.getInput(&sy, &sx, &ty, &tx);
         sx *= 2;
@@ -197,17 +196,7 @@ int main()
                 if (0<=tx && tx<2*W &&
                     0<=ty && ty<2*H)
                 {
-                    int td = D[fy][fx];
-                    if (dx[d]!=0)
-                    {
-                        int mx = fx+dx[d];
-                        td += max(1, int((HL[fy]*((2*W-3)-mx) + HR[fy]*(mx-1))/(2*W-4) + delta[fy][mx]));
-                    }
-                    else
-                    {
-                        int my = fy+dy[d];
-                        td += max(1, int((VU[fx]*((2*H-3)-my) + VD[fx]*(my-1))/(2*H-4) + delta[my][fx]));
-                    }
+                    int td = D[fy][fx] + dist(fx, fy, d);
                     if (td<D[ty][tx])
                     {
                         D[ty][tx] = td;
@@ -239,7 +228,7 @@ int main()
         paths.push_back(path);
         results.push_back(result);
 
-        //  correct weight
+        //  correct distances
         for (int k2=0; k2<=k; k2++)
         {
             int x = sxs[k2];
@@ -247,16 +236,7 @@ int main()
             int d = 0;
             for (int p: paths[k2])
             {
-                if (dx[p]!=0)
-                {
-                    int mx = x+dx[p];
-                    d += max(1, int((HL[y]*((2*W-3)-mx) + HR[y]*(mx-1))/(2*W-4) + delta[y][mx]));
-                }
-                else
-                {
-                    int my = y+dy[p];
-                    d += max(1, int((VU[x]*((2*H-3)-my) + VD[x]*(my-1))/(2*H-4) + delta[my][x]));
-                }
+                d += dist(x, y, p);
                 x += dx[p]*2;
                 y += dy[p]*2;
             }
