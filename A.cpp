@@ -137,6 +137,7 @@ int main()
 
     vector<double> HL(H*2-1, 1000), HR(H*2-1, 1000);
     vector<double> VU(W*2-1, 1000), VD(H*2-1, 1000);
+    vector<vector<double>> delta(H*2-1, vector<double>(W*2-1));
 
     vector<int> sxs, sys;
     vector<vector<int>> paths;
@@ -172,7 +173,7 @@ int main()
 
         int oo = 99999999;
         vector<vector<int>> D(H*2-1, vector<int>(W*2-1, oo));
-        vector<vector<char>> M(H*2-1, vector<char>(W*2-1));
+        vector<vector<int>> M(H*2-1, vector<int>(W*2-1));
         priority_queue<pair<int, pair<int, int>>> Q;
         vector<vector<bool>> F(H*2-1, vector<bool>(W*2-1));
 
@@ -200,12 +201,12 @@ int main()
                     if (dx[d]!=0)
                     {
                         int mx = fx+dx[d];
-                        td += int((HL[fy]*((2*W-3)-mx) + HR[fy]*(mx-1))/(2*W-4));
+                        td += max(1, int((HL[fy]*((2*W-3)-mx) + HR[fy]*(mx-1))/(2*W-4) + delta[fy][mx]));
                     }
                     else
                     {
                         int my = fy+dy[d];
-                        td += int((VU[fx]*((2*H-3)-my) + VD[fx]*(my-1))/(2*H-4));
+                        td += max(1, int((VU[fx]*((2*H-3)-my) + VD[fx]*(my-1))/(2*H-4) + delta[my][fx]));
                     }
                     if (td<D[ty][tx])
                     {
@@ -249,12 +250,12 @@ int main()
                 if (dx[p]!=0)
                 {
                     int mx = x+dx[p];
-                    d += int((HL[y]*((2*W-3)-mx) + HR[y]*(mx-1))/(2*W-4));
+                    d += max(1, int((HL[y]*((2*W-3)-mx) + HR[y]*(mx-1))/(2*W-4) + delta[y][mx]));
                 }
                 else
                 {
                     int my = y+dy[p];
-                    d += int((VU[x]*((2*H-3)-my) + VD[x]*(my-1))/(2*H-4));
+                    d += max(1, int((VU[x]*((2*H-3)-my) + VD[x]*(my-1))/(2*H-4) + delta[my][x]));
                 }
                 x += dx[p]*2;
                 y += dy[p]*2;
@@ -267,16 +268,18 @@ int main()
                 if (dx[p]!=0)
                 {
                     int mx = x+dx[p];
-                    double t = diff*(2*W-4)/(((2*W-3)-mx)*((2*W-3)-mx)+(mx-1)*(mx-1))/(W-1);
+                    double t = diff*0.75*(2*W-4)/(((2*W-3)-mx)*((2*W-3)-mx)+(mx-1)*(mx-1))/(W-1);
                     HL[y] = max(1000., min(9000., HL[y]+((2*W-3)-mx)*t));
                     HR[y] = max(1000., min(9000., HR[y]+(mx-1)*t));
+                    delta[y][mx] += diff*0.25/(W-1);
                 }
                 else
                 {
                     int my = y+dy[p];
-                    double t = diff*(2*H-4)/(((2*H-3)-my)*((2*H-3)-my)+(my-1)*(my-1))/(H-1);
+                    double t = diff*0.75*(2*H-4)/(((2*H-3)-my)*((2*H-3)-my)+(my-1)*(my-1))/(H-1);
                     VU[x] = max(1000., min(9000., VU[x]+((2*H-3)-my)*t));
                     VD[x] = max(1000., min(9000., VD[x]+(my-1)*t));
+                    delta[my][x] += diff*0.25/(H-1);
                 }
                 x += dx[p]*2;
                 y += dy[p]*2;
