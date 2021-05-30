@@ -2,7 +2,7 @@
 score=0
 for input in in/*.txt
 do
-  s=$(./A < $input 2>&1 | grep -oP '(?<=score: )\d+')
+  s=$($1 < $input 2>&1 | grep -oP '(?<=score: )\d+')
   echo $s
   score=$((score+s))
 done

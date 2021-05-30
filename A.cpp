@@ -1,11 +1,11 @@
 #ifndef PARAM_HV_MIN
-#define PARAM_HV_MIN 1000.
+#define PARAM_HV_MIN 0.
 #endif
 #ifndef PARAM_HV_MAX
-#define PARAM_HV_MAX 8000.
+#define PARAM_HV_MAX 8600.
 #endif
 #ifndef PARAM_HV_INIT
-#define PARAM_HV_INIT 2500.
+#define PARAM_HV_INIT 2800.
 #endif
 #ifndef PARAM_DELTA_MIN
 #define PARAM_DELTA_MIN -8000.
