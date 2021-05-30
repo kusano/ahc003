@@ -1,23 +1,26 @@
 #ifndef PARAM_HV_MIN
-#define PARAM_HV_MIN 0.
+#define PARAM_HV_MIN 1200.
 #endif
 #ifndef PARAM_HV_MAX
-#define PARAM_HV_MAX 8600.
+#define PARAM_HV_MAX 9200.
 #endif
 #ifndef PARAM_HV_INIT
-#define PARAM_HV_INIT 2800.
+#define PARAM_HV_INIT 2888.
+#endif
+#ifndef PARAM_HV_LEARN_RATE
+#define PARAM_HV_LEARN_RATE 0.43
 #endif
 #ifndef PARAM_DELTA_MIN
-#define PARAM_DELTA_MIN -250.
+#define PARAM_DELTA_MIN -2300.
 #endif
 #ifndef PARAM_DELTA_MAX
-#define PARAM_DELTA_MAX 10000.
+#define PARAM_DELTA_MAX 3100.
 #endif
 #ifndef PARAM_DELTA_INIT
-#define PARAM_DELTA_INIT 2500.
+#define PARAM_DELTA_INIT -1000.
 #endif
-#ifndef PARAM_DELTA_RATE
-#define PARAM_DELTA_RATE 0.13
+#ifndef PARAM_DELTA_LEARN_RATE
+#define PARAM_DELTA_LEARN_RATE 0.10
 #endif
 
 #include <iostream>
@@ -275,18 +278,18 @@ int main()
                 if (dx[p]!=0)
                 {
                     int mx = x+dx[p];
-                    double t = diff*(1-PARAM_DELTA_RATE)*(2*W-4)/(((2*W-3)-mx)*((2*W-3)-mx)+(mx-1)*(mx-1))/(W-1);
+                    double t = diff*(PARAM_HV_LEARN_RATE)*(2*W-4)/(((2*W-3)-mx)*((2*W-3)-mx)+(mx-1)*(mx-1))/(W-1);
                     HL[y] = clip(HL[y]+((2*W-3)-mx)*t, PARAM_HV_MIN, PARAM_HV_MAX);
                     HR[y] = clip(HR[y]+(mx-1)*t, PARAM_HV_MIN, PARAM_HV_MAX);
-                    delta[y][mx] = clip(delta[y][mx]+diff*PARAM_DELTA_RATE/(W-1), PARAM_DELTA_MIN, PARAM_DELTA_MAX);
+                    delta[y][mx] = clip(delta[y][mx]+diff*PARAM_DELTA_LEARN_RATE/(W-1), PARAM_DELTA_MIN, PARAM_DELTA_MAX);
                 }
                 else
                 {
                     int my = y+dy[p];
-                    double t = diff*(1-PARAM_DELTA_RATE)*(2*H-4)/(((2*H-3)-my)*((2*H-3)-my)+(my-1)*(my-1))/(H-1);
+                    double t = diff*(PARAM_HV_LEARN_RATE)*(2*H-4)/(((2*H-3)-my)*((2*H-3)-my)+(my-1)*(my-1))/(H-1);
                     VU[x] = clip(VU[x]+((2*H-3)-my)*t, PARAM_HV_MIN, PARAM_HV_MAX);
                     VD[x] = clip(VD[x]+(my-1)*t, PARAM_HV_MIN, PARAM_HV_MAX);
-                    delta[my][x] = clip(delta[my][x]+diff*PARAM_DELTA_RATE/(H-1), PARAM_DELTA_MIN, PARAM_DELTA_MAX);
+                    delta[my][x] = clip(delta[my][x]+diff*PARAM_DELTA_LEARN_RATE/(H-1), PARAM_DELTA_MIN, PARAM_DELTA_MAX);
                 }
                 x += dx[p]*2;
                 y += dy[p]*2;
