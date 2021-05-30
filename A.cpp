@@ -1,26 +1,26 @@
 #ifndef PARAM_HV_MIN
-#define PARAM_HV_MIN 1200.
+#define PARAM_HV_MIN 531.
 #endif
 #ifndef PARAM_HV_MAX
-#define PARAM_HV_MAX 9200.
+#define PARAM_HV_MAX 8000.
 #endif
 #ifndef PARAM_HV_INIT
-#define PARAM_HV_INIT 2888.
+#define PARAM_HV_INIT 3327.
 #endif
 #ifndef PARAM_HV_LEARN_RATE
-#define PARAM_HV_LEARN_RATE 0.43
+#define PARAM_HV_LEARN_RATE 0.5
 #endif
 #ifndef PARAM_DELTA_MIN
-#define PARAM_DELTA_MIN -2300.
+#define PARAM_DELTA_MIN -3664.
 #endif
 #ifndef PARAM_DELTA_MAX
-#define PARAM_DELTA_MAX 3100.
+#define PARAM_DELTA_MAX 3190.
 #endif
 #ifndef PARAM_DELTA_INIT
-#define PARAM_DELTA_INIT -1000.
+#define PARAM_DELTA_INIT -626.
 #endif
 #ifndef PARAM_DELTA_LEARN_RATE
-#define PARAM_DELTA_LEARN_RATE 0.10
+#define PARAM_DELTA_LEARN_RATE 0.105
 #endif
 
 #include <iostream>
