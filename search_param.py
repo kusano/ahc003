@@ -10,13 +10,11 @@ prog = sys.argv[1]
 def objective(trial):
   delta_min = trial.suggest_float("delta_min", -10000, 0)
   delta_max = trial.suggest_float("delta_max", 0, 10000)
-  delta_init = trial.suggest_float("delta_init", delta_min, delta_max)
 
   os.system(
     f"g++ -O2 " +
     f"-DPARAM_DELTA_MIN={delta_min} "+
     f"-DPARAM_DELTA_MAX={delta_max} "+
-    f"-DPARAM_DELTA_INIT={delta_init} "+
     f"-o {prog} A.cpp")
 
   s = pwn.process(f"./test.sh {prog}", shell=True)
@@ -26,7 +24,7 @@ def objective(trial):
   return score
 
 study = optuna.create_study(
-  study_name="ahc003_5",
+  study_name="ahc003_6",
   storage="sqlite:///db.sqlite3",
   load_if_exists=True,
   direction="maximize")

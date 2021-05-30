@@ -8,10 +8,10 @@
 #define PARAM_HV_INIT 2800.
 #endif
 #ifndef PARAM_DELTA_MIN
-#define PARAM_DELTA_MIN -8000.
+#define PARAM_DELTA_MIN -250.
 #endif
 #ifndef PARAM_DELTA_MAX
-#define PARAM_DELTA_MAX 4000.
+#define PARAM_DELTA_MAX 10000.
 #endif
 #ifndef PARAM_DELTA_INIT
 #define PARAM_DELTA_INIT 2500.
