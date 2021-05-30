@@ -1,7 +1,4 @@
 #!/bin/bash
-
-g++ -O2 -o A A.cpp
-
 score=0
 for input in in/*.txt
 do
@@ -9,4 +6,4 @@ do
   echo $s
   score=$((score+s))
 done
-echo $score
+echo "score: $score"

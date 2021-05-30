@@ -1,3 +1,25 @@
+#ifndef PARAM_HV_MIN
+#define PARAM_HV_MIN 1000.
+#endif
+#ifndef PARAM_HV_MAX
+#define PARAM_HV_MAX 8000.
+#endif
+#ifndef PARAM_HV_INIT
+#define PARAM_HV_INIT 2500.
+#endif
+#ifndef PARAM_DELTA_MIN
+#define PARAM_DELTA_MIN -8000.
+#endif
+#ifndef PARAM_DELTA_MAX
+#define PARAM_DELTA_MAX 4000.
+#endif
+#ifndef PARAM_DELTA_INIT
+#define PARAM_DELTA_INIT 1000.
+#endif
+#ifndef PARAM_DELTA_RATE
+#define PARAM_DELTA_RATE 0.13
+#endif
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -136,8 +158,8 @@ int main()
     int dx[] = {0, 0, -1, 1};
     int dy[] = {-1, 1, 0, 0};
 
-    vector<double> HL(H*2-1, 2000), HR(H*2-1, 2000);
-    vector<double> VU(W*2-1, 2000), VD(H*2-1, 2000);
+    vector<double> HL(H*2-1, PARAM_HV_INIT), HR(H*2-1, PARAM_HV_INIT);
+    vector<double> VU(W*2-1, PARAM_HV_INIT), VD(H*2-1, PARAM_HV_INIT);
     vector<vector<double>> delta(H*2-1, vector<double>(W*2-1));
 
     vector<int> sxs, sys;
@@ -156,6 +178,11 @@ int main()
             int my = fy+dy[dir];
             return max(1, int((VU[fx]*((2*H-3)-my) + VD[fx]*(my-1))/(2*H-4) + delta[my][fx]));
         }
+    };
+
+    auto clip= [&](double v, double mn, double mx) -> double
+    {
+        return min(mx, max(mn, v));
     };
 
     for (int k=0; k<K; k++)
@@ -248,18 +275,18 @@ int main()
                 if (dx[p]!=0)
                 {
                     int mx = x+dx[p];
-                    double t = diff*0.75*(2*W-4)/(((2*W-3)-mx)*((2*W-3)-mx)+(mx-1)*(mx-1))/(W-1);
-                    HL[y] = max(2000., min(8000., HL[y]+((2*W-3)-mx)*t));
-                    HR[y] = max(2000., min(8000., HR[y]+(mx-1)*t));
-                    delta[y][mx] += diff*0.25/(W-1);
+                    double t = diff*(1-PARAM_DELTA_RATE)*(2*W-4)/(((2*W-3)-mx)*((2*W-3)-mx)+(mx-1)*(mx-1))/(W-1);
+                    HL[y] = clip(HL[y]+((2*W-3)-mx)*t, PARAM_HV_MIN, PARAM_HV_MAX);
+                    HR[y] = clip(HR[y]+(mx-1)*t, PARAM_HV_MIN, PARAM_HV_MAX);
+                    delta[y][mx] = clip(delta[y][mx]+diff*PARAM_DELTA_RATE/(W-1), PARAM_DELTA_MIN, PARAM_DELTA_MAX);
                 }
                 else
                 {
                     int my = y+dy[p];
-                    double t = diff*0.75*(2*H-4)/(((2*H-3)-my)*((2*H-3)-my)+(my-1)*(my-1))/(H-1);
-                    VU[x] = max(2000., min(8000., VU[x]+((2*H-3)-my)*t));
-                    VD[x] = max(2000., min(8000., VD[x]+(my-1)*t));
-                    delta[my][x] += diff*0.25/(H-1);
+                    double t = diff*(1-PARAM_DELTA_RATE)*(2*H-4)/(((2*H-3)-my)*((2*H-3)-my)+(my-1)*(my-1))/(H-1);
+                    VU[x] = clip(VU[x]+((2*H-3)-my)*t, PARAM_HV_MIN, PARAM_HV_MAX);
+                    VD[x] = clip(VD[x]+(my-1)*t, PARAM_HV_MIN, PARAM_HV_MAX);
+                    delta[my][x] = clip(delta[my][x]+diff*PARAM_DELTA_RATE/(H-1), PARAM_DELTA_MIN, PARAM_DELTA_MAX);
                 }
                 x += dx[p]*2;
                 y += dy[p]*2;
