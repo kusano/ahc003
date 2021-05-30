@@ -8,18 +8,12 @@ pwn.context.log_level = "error"
 prog = sys.argv[1]
 
 def objective(trial):
-  hv_min = trial.suggest_float("hv_min", 0, 5000)
-  hv_max = trial.suggest_float("hv_max", 5000, 10000)
-  hv_init = trial.suggest_float("hv_init", hv_min, hv_max)
   delta_min = trial.suggest_float("delta_min", -10000, 0)
   delta_max = trial.suggest_float("delta_max", 0, 10000)
   delta_init = trial.suggest_float("delta_init", delta_min, delta_max)
 
   os.system(
     f"g++ -O2 " +
-    f"-DPARAM_HV_MIN={hv_min} "+
-    f"-DPARAM_HV_MAX={hv_max} "+
-    f"-DPARAM_HV_INIT={hv_init} "+
     f"-DPARAM_DELTA_MIN={delta_min} "+
     f"-DPARAM_DELTA_MAX={delta_max} "+
     f"-DPARAM_DELTA_INIT={delta_init} "+
@@ -32,7 +26,7 @@ def objective(trial):
   return score
 
 study = optuna.create_study(
-  study_name="ahc003_4",
+  study_name="ahc003_5",
   storage="sqlite:///db.sqlite3",
   load_if_exists=True,
   direction="maximize")

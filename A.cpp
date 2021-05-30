@@ -14,7 +14,7 @@
 #define PARAM_DELTA_MAX 4000.
 #endif
 #ifndef PARAM_DELTA_INIT
-#define PARAM_DELTA_INIT 1000.
+#define PARAM_DELTA_INIT 2500.
 #endif
 #ifndef PARAM_DELTA_RATE
 #define PARAM_DELTA_RATE 0.13
